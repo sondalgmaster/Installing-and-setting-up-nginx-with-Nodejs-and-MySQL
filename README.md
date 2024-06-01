@@ -39,7 +39,7 @@ node -v
 
 ```
 ## Step 4: Install npm
-install npm:
+Install npm:
 ```bash
 sudo apt install npm
 ```
@@ -49,7 +49,7 @@ npm -v
 ```
 
 ## Step 5: Git clone your repository and set up
-Go to your localization on your system where you want to install your website, in my case it is `/var/www/`
+Go to your localization on your system where you want to install your website, in my case it is `/var/www/My-Portfolio-webside`
 ```bash
 cd /var/www/
 sudo git clone https://github.com/your/link
@@ -58,9 +58,12 @@ sudo git clone https://github.com/your/link
 ```bash
 sudo npm i
 ```
-### Install also pm2
+### Install pm2
 ```bash
 sudo npm install pm2 -g
+```
+Verify the installation:
+```bash
 pm2 -v
 ```
 
@@ -80,7 +83,8 @@ Verify MySQL installation:
 sudo systemctl status mysql
 ```
 
-### configure MySQL to connect from different localization 
+### Configure MySQL for Remote Access
+
 Open the MySQL configuration file (my.cnf or mysqld.cnf):
 ```bash
 sudo nano /etc/mysql/mysql.conf.d/mysqld.cnf
@@ -93,31 +97,31 @@ Change this line to:
 ```bash
 bind-address = 0.0.0.0
 ```
-This will allow MySQL to accept connections from `any IP` address.
-If you want you can put in your ip different so that none else can connect to your MySQL database
+This will allow MySQL to accept connections from any IP address. If desired, specify a different IP address to restrict access.
 
-now you can save and exit with presing `Control + X` and `y` to save and enter
+Save and exit by pressing `Control + X`, then `Y` to confirm, and `Enter`.
 
-Restart MySQL service:
+Restart the MySQL service:
 ```bash
 sudo systemctl restart mysql
 ```
+
 ### Create a MySQL User for Remote Access
+
 Log in to MySQL as root:
 ```bash
 sudo mysql -u root -p
 ```
 Create a new user and grant remote access:
 
-Replace remote_user, password, and remote_host_ip with your desired username, password, and the IP address of the remote host. Use % as remote_host_ip if you want to allow access from any IP address.
-
-```bash
+Replace `remote_user`, `password`, and `remote_host_ip` with your desired username, password, and the IP address of the remote host. Use `%` as `remote_host_ip` if you want to allow access from any IP address.
+```sql
 CREATE USER 'remote_user'@'remote_host_ip' IDENTIFIED BY 'password';
 GRANT ALL PRIVILEGES ON *.* TO 'remote_user'@'remote_host_ip' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 ```
 For example, to allow access from any IP address:
-```bash
+```sql
 CREATE USER 'remote_user'@'%' IDENTIFIED BY 'password';
 GRANT ALL PRIVILEGES ON *.* TO 'remote_user'@'%' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
@@ -126,35 +130,35 @@ Exit MySQL:
 ```bash
 EXIT;
 ```
-Step 7: Adjust Firewall Settings
-Open MySQL port in the firewall:
 
-MySQL uses port 3306 by default. Use the following commands to open this port:
+## Step 7: Adjust Firewall Settings
+
+Open MySQL port in the firewall (default is port 3306):
 ```bash
 sudo ufw allow 3306/tcp
 ```
-open port for Nginx:
+Open ports for Nginx:
 ```bash
 sudo ufw allow 'Nginx Full'
 ```
-open port for ssh
+Open port for SSH:
 ```bash
 sudo ufw allow ssh
 ```
-open port for http and https
+Open ports for HTTP and HTTPS:
 ```bash
 sudo ufw allow http
 sudo ufw allow https
 ```
-open port for default dns port
+Open the default DNS port (53):
 ```bash
 sudo ufw allow 53
 ```
-open port for your nodejs aplication (probobly 3000):
+Open the port for your Node.js application (probably 3000):
 ```bash
 sudo ufw allow 3000
 ```
-Enable, disable, and restart commands ufw:
+Enable, disable, and reset UFW:
 ```bash
 sudo ufw enable
 sudo ufw disable
@@ -166,8 +170,8 @@ Create a new Nginx server block file:
 sudo nano /etc/nginx/sites-available/your_domain
 ```
 Here paste in this code and edit on `server_name`, 
-Change on `proxy_pass` port your app is runing at to port(Most probobly 3000).
-Change on localization of where your files are (It is most comon to put them in `/var/www/your_githug_reposetory`)
+Change on `proxy_pass` port your app is runing at to port(Most probably 3000).
+Change on localization of where your files are (It is most common to put them in `/var/www/your_GitHub_repository`)
 ```bash
 server {
     listen 80;
@@ -206,7 +210,7 @@ server {
     }
 }
 ```
-Exemple:
+Example:
 
 ```bash
 server {
@@ -246,7 +250,7 @@ server {
     }
 }
 ```
-### Unlin Defoult and link your website
+### Unlike default and link your website
 
 Remove the symlink for the default server block:
 ```bash
@@ -271,7 +275,32 @@ Reload the Nginx service to apply the changes:
 ```bash
 sudo systemctl reload nginx
 ```
+#### Test your app
 
+## Resolving MySQL Authentication Issue
+If you encounter authentication errors when performing MySQL operations such as inserting, deleting, or selecting data, it may be due to a mismatch in password hashing algorithms. You can resolve this by changing the password hashing from caching_sha2_password to mysql_native_password. Follow these steps:
+
+Log into Your MySQL Database:
+```bash
+mysql -u root -p
+```
+Change Password Hashing:
+
+Replace 'username' with your username and 'localhost' with % or the IP address from which this user can log in. Replace 'new_password' with your desired password.
+```bash
+ALTER USER 'username'@'localhost' IDENTIFIED WITH mysql_native_password BY 'new_password';
+```
+Exit MySQL:
+```bash
+exit;
+```
+Test Your Website:
+After making these changes, test your website to ensure the issue has been resolved.
+
+Rebooting your system after making changes, especially those related to system-level configurations like MySQL, can indeed ensure that all changes take effect properly. Here's how you can reboot your system:
+```bash
+sudo reboot now
+```
 
 
 
