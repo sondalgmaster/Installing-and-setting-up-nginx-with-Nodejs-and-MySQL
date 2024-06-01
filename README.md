@@ -164,7 +164,7 @@ sudo ufw enable
 sudo ufw disable
 sudo ufw reset
 ```
-## Importing/Export Your Database to Your MySQL Server
+## Step 8: Importing/Export Your Database to Your MySQL Server
 ### Exporting Your Database from MySQL Workbench
 When you log into your MySQL Workbench and want to export your database, follow these steps:
 
@@ -206,7 +206,7 @@ Click "Start Import" to begin the import process.
 By following these steps, you can export your database from MySQL Workbench on your local machine and import it into your MySQL server.
 
 
-## Step 8: Configure Nginx for a Node.js App
+## Step 9: Configure Nginx for a Node.js App
 Create a new Nginx server block file:
 ```bash
 sudo nano /etc/nginx/sites-available/your_domain
@@ -292,7 +292,7 @@ server {
     }
 }
 ```
-## Step 9: Unlike default and link your website
+## Step 10: Unlike default and link your website
 
 Remove the symlink for the default server block:
 ```bash
